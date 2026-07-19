@@ -1,0 +1,32 @@
+{
+  "name": "self-sealing-tower-mvp",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0",
+    "build": "vite build",
+    "preview": "vite preview --host 0.0.0.0",
+    "build:standalone": "npm run build && node scripts/build-standalone.mjs",
+    "typecheck": "tsc --noEmit",
+    "typecheck:spacetime": "tsc -p spacetime/tsconfig.json --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "koota": "0.6.6",
+    "react": "19.2.7",
+    "react-dom": "19.2.7",
+    "spacetimedb": "2.6.1",
+    "three": "0.185.1",
+    "zod": "4.4.3"
+  },
+  "devDependencies": {
+    "@types/react": "19.2.14",
+    "@types/react-dom": "19.2.3",
+    "@types/three": "0.183.1",
+    "typescript": "7.0.2",
+    "vite": "8.1.5",
+    "vitest": "4.1.10"
+  }
+}

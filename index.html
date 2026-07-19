@@ -1,0 +1,340 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#0b0b0d" />
+    <meta name="background-color" content="#0b0b0d" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Self-Sealing Tower" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta
+      name="description"
+      content="A playable 3D systems game about corrigibility, path dependence, and the architecture of self-sealing systems."
+    />
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="icon" href="./icons/icon-192.png" sizes="192x192" />
+    <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png" />
+    <title>The Self-Sealing Tower</title>
+  </head>
+  <body>
+    <div id="app" data-sheet="peek" data-desktop-panel="right">
+      <canvas id="scene" aria-label="Interactive 3D tower visualization"></canvas>
+
+      <header class="topbar" aria-label="Game controls">
+        <div class="brand-lockup">
+          <p class="eyebrow">Routed correction</p>
+          <h1>The Self-Sealing Tower</h1>
+        </div>
+        <div class="top-status" aria-live="polite">
+          <span id="onlineStatus" class="connection-pill">Online</span>
+          <span class="floor-pill">Floor <strong id="headerFloorNumber">0</strong>/10</span>
+        </div>
+        <div class="top-actions desktop-actions">
+          <a class="ghost-button city-link" href="./city.html">Enter city</a>
+          <button id="focusButton" class="ghost-button" type="button">Focus</button>
+          <button id="xrayButton" class="ghost-button" type="button" aria-pressed="false">X-ray</button>
+          <button id="soundButton" class="ghost-button" type="button" aria-pressed="false">Sound</button>
+          <button id="settingsButton" class="ghost-button" type="button">Settings</button>
+        </div>
+        <div class="top-actions mobile-actions">
+          <button id="mobileFocusButton" class="icon-button" type="button" aria-label="Focus current floor">◎</button>
+          <button id="mobileHudButton" class="icon-button" type="button" aria-label="Open system metrics">HUD</button>
+          <button id="mobileMenuButton" class="icon-button" type="button" aria-label="Open settings">•••</button>
+        </div>
+      </header>
+
+      <section class="mobile-hud" aria-label="Compact system metrics">
+        <button class="hud-chip" type="button" data-open-metrics>
+          <span>Route</span><strong id="mobileRouteValue">76</strong>
+        </button>
+        <button class="hud-chip" type="button" data-open-metrics>
+          <span>Stability</span><strong id="mobileStabilityValue">72</strong>
+        </button>
+        <button class="hud-chip danger" type="button" data-open-metrics>
+          <span>Debt</span><strong id="mobileDebtValue">12</strong>
+        </button>
+        <span id="mobileSystemStatus" class="status-pill">Open</span>
+      </section>
+
+      <aside class="metrics-panel glass-panel" aria-label="System metrics" aria-hidden="false">
+        <div class="panel-heading">
+          <div>
+            <p class="eyebrow">System state</p>
+            <h2>Floor <span id="floorNumber">0</span> / 10</h2>
+          </div>
+          <div class="panel-actions">
+            <div id="systemStatus" class="status-pill">Open</div>
+            <button id="metricsCloseButton" class="icon-button mobile-only" type="button" aria-label="Close system metrics">×</button>
+          </div>
+        </div>
+
+        <div class="primary-metrics">
+          <div class="metric-row">
+            <div class="metric-label"><span>Immediate performance</span><strong id="performanceValue">68</strong></div>
+            <div class="meter"><div id="performanceBar" class="meter-fill"></div></div>
+          </div>
+          <div class="metric-row">
+            <div class="metric-label"><span>Route accessibility</span><strong id="routeValue">76</strong></div>
+            <div class="meter"><div id="routeBar" class="meter-fill"></div></div>
+          </div>
+          <div class="metric-row">
+            <div class="metric-label"><span>Structural stability</span><strong id="stabilityValue">72</strong></div>
+            <div class="meter"><div id="stabilityBar" class="meter-fill"></div></div>
+          </div>
+          <div class="metric-row">
+            <div class="metric-label"><span>Correction debt</span><strong id="debtValue">12</strong></div>
+            <div class="meter debt"><div id="debtBar" class="meter-fill"></div></div>
+          </div>
+        </div>
+
+        <details class="internals" open>
+          <summary>Internal variables</summary>
+          <div class="variable-grid">
+            <div><span>φ</span><strong id="phiValue">58</strong><small>Fast adaptability</small></div>
+            <div><span>θ</span><strong id="thetaValue">42</strong><small>Slow rigidity</small></div>
+            <div><span>M</span><strong id="memoryValue">64</strong><small>Audit memory</small></div>
+            <div><span>D</span><strong id="dissentValue">61</strong><small>Dissent access</small></div>
+            <div><span>I</span><strong id="independenceValue">66</strong><small>Channel independence</small></div>
+            <div><span>C</span><strong id="capacityValue">74</strong><small>Review capacity</small></div>
+          </div>
+        </details>
+
+        <div class="metrics-footer mobile-only">
+          <button id="mobileXrayButton" class="ghost-button" type="button" aria-pressed="false">X-ray off</button>
+          <button id="mobileSoundButton" class="ghost-button" type="button" aria-pressed="false">Sound off</button>
+        </div>
+      </aside>
+
+      <main class="decision-panel glass-panel" aria-live="polite">
+        <div class="desktop-panel-toolbar desktop-only" id="desktopPanelToolbar">
+          <div class="desktop-drag-handle" id="desktopDragHandle" title="Drag floating panel">
+            <span class="drag-dots" aria-hidden="true">⠿</span>
+            <span>Decision workspace</span>
+          </div>
+          <div class="desktop-layout-actions" aria-label="Decision panel layout">
+            <button class="panel-layout-button" id="dockLeftButton" type="button" title="Dock left" aria-label="Dock decision panel left">⇤</button>
+            <button class="panel-layout-button active" id="dockRightButton" type="button" title="Dock right" aria-label="Dock decision panel right">⇥</button>
+            <button class="panel-layout-button" id="floatPanelButton" type="button" title="Float panel" aria-label="Make decision panel movable">↗</button>
+            <button class="panel-layout-button" id="collapsePanelButton" type="button" title="Collapse panel" aria-label="Collapse decision panel">−</button>
+          </div>
+        </div>
+        <div class="desktop-resize-handle desktop-only" id="desktopResizeHandle" aria-hidden="true"></div>
+        <div class="sheet-grabber" aria-hidden="true"></div>
+        <div class="sheet-toolbar mobile-only">
+          <button id="sheetToggleButton" class="sheet-toggle" type="button" aria-label="Expand decision panel">
+            <span id="sheetToggleLabel">Expand</span>
+          </button>
+          <button id="historyOpenButton" class="sheet-action" type="button">History</button>
+        </div>
+
+        <div class="decision-scroll" id="decisionScroll">
+          <div id="introView">
+            <p class="eyebrow">Interactive systems story</p>
+            <h2>Build upward. Preserve a way back down.</h2>
+            <p>
+              Each floor is a decision cycle. Fast fixes may improve the visible system while sealing the routes that let future evidence reach its foundations.
+            </p>
+            <div class="legend-grid">
+              <div><span class="legend-mark open"></span><strong>Open routes</strong><small>Evidence can reach structural assumptions.</small></div>
+              <div><span class="legend-mark debt"></span><strong>Correction debt</strong><small>Unresolved causes accumulate below performance.</small></div>
+              <div><span class="legend-mark slow"></span><strong>Slow coordinates</strong><small>Values, priors, governance, model class.</small></div>
+            </div>
+            <div class="intro-actions">
+              <button id="startButton" class="primary-button" type="button">Enter the tower</button>
+              <button id="tutorialButton" class="secondary-button" type="button">How to play</button>
+            </div>
+          </div>
+
+          <div id="eventView" hidden>
+            <div class="event-meta">
+              <span id="eventDomain" class="domain-pill">SYSTEM</span>
+              <span id="eventSeverity">Severity 0</span>
+              <span id="eventRecurrence">First occurrence</span>
+            </div>
+            <h2 id="eventTitle"></h2>
+            <p id="eventStory" class="event-story"></p>
+            <div id="signalBox" class="signal-box"></div>
+            <div id="choices" class="choices"></div>
+          </div>
+
+          <div id="endingView" hidden>
+            <p class="eyebrow">Final structural audit</p>
+            <h2 id="endingTitle"></h2>
+            <p id="endingBody"></p>
+            <div id="endingStats" class="ending-stats"></div>
+            <div class="ending-actions">
+              <button id="restartButton" class="primary-button" type="button">Build again</button>
+              <button id="shareResultButton" class="secondary-button" type="button">Share result</button>
+            </div>
+          </div>
+        </div>
+      </main>
+
+      <aside class="history-panel glass-panel" aria-label="Decision archive" aria-hidden="false">
+        <div class="panel-heading compact">
+          <div>
+            <p class="eyebrow">Decision archive</p>
+            <h2>Structural history</h2>
+          </div>
+          <div class="panel-actions">
+            <button id="undoButton" class="text-button" type="button" disabled>Undo</button>
+            <button id="historyToggle" class="icon-button desktop-only" type="button" aria-expanded="true" aria-label="Toggle history panel">−</button>
+            <button id="historyCloseButton" class="icon-button mobile-only" type="button" aria-label="Close history">×</button>
+          </div>
+        </div>
+        <div id="historyList" class="history-list">
+          <p class="empty-history">Your tower has no floors yet.</p>
+        </div>
+      </aside>
+
+      <div class="controls-hint" aria-hidden="true">
+        <span>Drag to orbit</span><span>Pinch to zoom</span><span>Double-tap to focus</span>
+      </div>
+
+      <nav class="mobile-dock" aria-label="Mobile quick actions">
+        <button id="dockFocusButton" type="button"><span>◎</span><small>Focus</small></button>
+        <button id="dockXrayButton" type="button" aria-pressed="false"><span>◇</span><small>X-ray</small></button>
+        <button id="dockHistoryButton" type="button"><span>≡</span><small>History</small></button>
+        <button id="dockSettingsButton" type="button"><span>⚙</span><small>Settings</small></button>
+      </nav>
+
+      <div id="installBanner" class="install-banner" hidden>
+        <div>
+          <strong>Install the tower</strong>
+          <small>Play full-screen and keep the game available offline.</small>
+        </div>
+        <button id="installButton" class="primary-button compact" type="button">Install</button>
+        <button id="installDismissButton" class="icon-button" type="button" aria-label="Dismiss install prompt">×</button>
+      </div>
+
+      <dialog id="settingsDialog" class="app-dialog settings-dialog">
+        <form method="dialog" class="dialog-shell">
+          <div class="dialog-header">
+            <div>
+              <p class="eyebrow">Mobile & display</p>
+              <h2>Game settings</h2>
+            </div>
+            <button class="icon-button" value="close" aria-label="Close settings">×</button>
+          </div>
+
+          <div class="settings-grid">
+            <label class="setting-row">
+              <span><strong>3D quality</strong><small>Auto adapts to your device.</small></span>
+              <select id="qualitySelect">
+                <option value="auto">Auto</option>
+                <option value="low">Battery saver</option>
+                <option value="high">High detail</option>
+              </select>
+            </label>
+            <label class="setting-row">
+              <span><strong>Text size</strong><small>Increase decision text and controls.</small></span>
+              <select id="textSizeSelect">
+                <option value="normal">Normal</option>
+                <option value="large">Large</option>
+              </select>
+            </label>
+            <label class="setting-row switch-row">
+              <span><strong>Reduce motion</strong><small>Minimize camera drift and floor animation.</small></span>
+              <input id="reduceMotionToggle" type="checkbox" />
+            </label>
+            <label class="setting-row switch-row">
+              <span><strong>Decision confirmation</strong><small>Prevent accidental floor choices.</small></span>
+              <input id="confirmToggle" type="checkbox" checked />
+            </label>
+            <label class="setting-row switch-row">
+              <span><strong>Haptic feedback</strong><small>Short vibration on supported devices.</small></span>
+              <input id="hapticsToggle" type="checkbox" checked />
+            </label>
+            <label class="setting-row switch-row">
+              <span><strong>Keep screen awake</strong><small>Available while installed or supported.</small></span>
+              <input id="wakeLockToggle" type="checkbox" />
+            </label>
+          </div>
+
+          <div class="dialog-actions">
+            <button id="settingsInstallButton" class="secondary-button" type="button">Install app</button>
+            <button id="settingsTutorialButton" class="secondary-button" type="button">Replay tutorial</button>
+            <button id="resetSaveButton" class="danger-button" type="button">Reset saved game</button>
+          </div>
+        </form>
+      </dialog>
+
+      <dialog id="confirmDialog" class="app-dialog confirm-dialog">
+        <div class="dialog-shell">
+          <div class="dialog-header">
+            <div>
+              <p class="eyebrow">Build this floor?</p>
+              <h2 id="confirmChoiceTitle">Choice</h2>
+            </div>
+            <button id="confirmCancelIcon" class="icon-button" type="button" aria-label="Cancel decision">×</button>
+          </div>
+          <p id="confirmChoiceDescription"></p>
+          <div id="confirmImpact" class="confirm-impact"></div>
+          <div class="dialog-actions split">
+            <button id="confirmCancelButton" class="secondary-button" type="button">Go back</button>
+            <button id="confirmChoiceButton" class="primary-button" type="button">Build floor</button>
+          </div>
+        </div>
+      </dialog>
+
+      <dialog id="tutorialDialog" class="app-dialog tutorial-dialog">
+        <div class="dialog-shell">
+          <div class="dialog-header">
+            <div>
+              <p class="eyebrow">First climb</p>
+              <h2>How the tower works</h2>
+            </div>
+            <button id="tutorialCloseButton" class="icon-button" type="button" aria-label="Close tutorial">×</button>
+          </div>
+          <div class="tutorial-pages">
+            <section class="tutorial-page active" data-tutorial-page="0">
+              <span class="tutorial-icon">01</span>
+              <h3>Every choice becomes architecture</h3>
+              <p>A decision does not disappear. It adds a floor and changes what future evidence can reach.</p>
+            </section>
+            <section class="tutorial-page" data-tutorial-page="1">
+              <span class="tutorial-icon">02</span>
+              <h3>Balance openness with function</h3>
+              <p>Protect route access, memory, and dissent without exhausting performance or stability.</p>
+            </section>
+            <section class="tutorial-page" data-tutorial-page="2">
+              <span class="tutorial-icon">03</span>
+              <h3>Move through the structure</h3>
+              <p>Drag to orbit, pinch to zoom, double-tap to focus, and use X-ray to expose correction cores.</p>
+            </section>
+          </div>
+          <div class="tutorial-dots" aria-hidden="true"><span class="active"></span><span></span><span></span></div>
+          <div class="dialog-actions split">
+            <button id="tutorialBackButton" class="secondary-button" type="button" disabled>Back</button>
+            <button id="tutorialNextButton" class="primary-button" type="button">Next</button>
+          </div>
+        </div>
+      </dialog>
+
+      <dialog id="resumeDialog" class="app-dialog resume-dialog">
+        <div class="dialog-shell">
+          <p class="eyebrow">Saved structure found</p>
+          <h2>Continue your tower?</h2>
+          <p id="resumeSummary">A previous climb is stored on this device.</p>
+          <div class="dialog-actions split">
+            <button id="newGameButton" class="secondary-button" type="button">Start over</button>
+            <button id="resumeGameButton" class="primary-button" type="button">Resume</button>
+          </div>
+        </div>
+      </dialog>
+
+      <div id="toast" class="toast" role="status" aria-live="polite"></div>
+      <div id="webglFallback" class="fallback" hidden>
+        <h2>3D rendering is unavailable</h2>
+        <p>You can still play the decision story, but the tower cannot be rendered on this device.</p>
+        <button id="continueWithout3dButton" class="primary-button" type="button">Continue in story mode</button>
+      </div>
+    </div>
+
+      <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

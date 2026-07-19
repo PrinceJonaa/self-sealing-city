@@ -1,0 +1,53 @@
+{
+  "id": "./",
+  "name": "The Self-Sealing City",
+  "short_name": "Sealing City",
+  "description": "A playable 3D civic simulation about corrigibility, institutional memory, and routes to correction.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": [
+    "standalone",
+    "minimal-ui"
+  ],
+  "orientation": "any",
+  "background_color": "#0b0b0d",
+  "theme_color": "#0b0b0d",
+  "categories": [
+    "games",
+    "education",
+    "simulation"
+  ],
+  "shortcuts": [
+    { "name": "Enter the city", "short_name": "City", "url": "./city.html" },
+    { "name": "Play the tower", "short_name": "Tower", "url": "./index.html" }
+  ],
+  "lang": "en-US",
+  "icons": [
+    {
+      "src": "./icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icons/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "prefer_related_applications": false,
+  "launch_handler": {
+    "client_mode": [
+      "navigate-existing",
+      "auto"
+    ]
+  }
+}

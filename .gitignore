@@ -1,0 +1,7 @@
+node_modules/
+dist/
+standalone-mobile.html
+standalone-city.html
+.DS_Store
+*.log
+

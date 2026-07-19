@@ -1,0 +1,6 @@
+# The Self-Sealing City
+
+The Self-Sealing City is a local-first 3D civic simulation about corrigibility, partial knowledge, institutional memory, and routes to correction.
+
+- [Play the city](./city.html)
+- [Play the tower](./index.html)
